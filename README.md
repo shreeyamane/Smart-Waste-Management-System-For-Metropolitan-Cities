@@ -328,19 +328,11 @@ Course:
 
 Student:
 
-**Shreeyash Paraj**
+**Shreeya Mane**
 
 Degree:
 
-**B.Tech Computer Science Engineering**
-
-Organization:
-
-**Fourise Software Solutions Pvt. Ltd.**
-
-Industry Mentor:
-
-**Mr. Om Gaikwad**
+**B.Tech in AI and Machine Learning**
 
 Academic Year:
 
