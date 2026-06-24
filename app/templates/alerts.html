@@ -1,0 +1,127 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            🚨 Alert Management
+        </h2>
+
+        <span class="badge bg-danger fs-6">
+            {{ alerts|length }} Total Alerts
+        </span>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Bin</th>
+                            <th>Alert Type</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for alert in alerts %}
+
+                    <tr>
+
+                        <td>
+                            {{ alert.id }}
+                        </td>
+
+                        <td>
+                            BIN-{{ alert.bin_id }}
+                        </td>
+
+                        <td>
+
+                            {% if alert.alert_type == "FULL_ALERT" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Full Alert
+                                </span>
+
+                            {% elif alert.alert_type == "OVERFLOW_ALERT" %}
+
+                                <span class="badge bg-danger">
+                                    Overflow Alert
+                                </span>
+
+                            {% elif alert.alert_type == "MAINTENANCE_ALERT" %}
+
+                                <span class="badge bg-info text-dark">
+                                    Maintenance
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ alert.alert_type }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ alert.message }}
+                        </td>
+
+                        <td>
+
+                            {% if alert.status == "ACTIVE" %}
+
+                                <span class="badge bg-danger">
+                                    ACTIVE
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-success">
+                                    RESOLVED
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ alert.created_at.strftime('%d-%m-%Y %H:%M') if alert.created_at else '' }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        ML Bin Full Prediction
+    </h2>
+
+    <div class="table-responsive">
+
+        <table class="table table-striped table-bordered">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Bin</th>
+                    <th>Fill %</th>
+                    <th>Time To Full</th>
+                    <th>Overflow Risk</th>
+                    <th>Priority Score</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for p in predictions %}
+
+                <tr>
+
+                    <td>
+                        {{ p.bin }}
+                    </td>
+
+                    <td>
+                        {{ p.fill_level }}%
+                    </td>
+
+                    <td>
+                        {{ p.hours }} Hours
+                    </td>
+
+                    <td>
+                        {{ p.overflow_risk }}%
+                    </td>
+
+                    <td>
+                        {{ p.priority_score }}
+                    </td>
+
+                    <td>
+
+                        {% if p.priority_score > 85 %}
+
+                        <span class="badge bg-danger">
+                            Critical
+                        </span>
+
+                        {% elif p.priority_score > 60 %}
+
+                        <span class="badge bg-warning text-dark">
+                            High
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-success">
+                            Normal
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

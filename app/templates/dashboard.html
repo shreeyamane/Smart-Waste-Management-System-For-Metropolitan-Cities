@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Smart Waste Dashboard
+    </h2>
+
+    <!-- Dashboard Cards -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <h1>{{ total_bins }}</h1>
+                    <h5>Total Bins</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body text-center">
+                    <h1>{{ full_bins }}</h1>
+                    <h5>Full Bins</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning shadow">
+                <div class="card-body text-center">
+                    <h1>{{ alerts }}</h1>
+                    <h5>Active Alerts</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h1>{{ collected }}</h1>
+                    <h5>Total Waste</h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Monitoring Summary -->
+
+    <div class="alert alert-info mb-4">
+        <h5>Smart Monitoring Status</h5>
+
+        <ul class="mb-0">
+            <li>Active Alerts: {{ alerts }}</li>
+            <li>Full Bins: {{ full_bins }}</li>
+            <li>Total Connected Bins: {{ total_bins }}</li>
+        </ul>
+    </div>
+
+    <!-- Waste Analytics -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+            <h4 class="mb-0">Waste Analytics</h4>
+        </div>
+
+        <div class="card-body">
+            <canvas id="wasteChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- Live Bin Monitoring -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+            <h4 class="mb-0">Live Bin Monitoring</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead class="table-dark">
+
+                        <tr>
+                            <th>Bin ID</th>
+                            <th>Location</th>
+                            <th>Fill Level</th>
+                            <th>Battery</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for bin in bins %}
+
+                        <tr>
+
+                            <td>{{ bin.bin_code }}</td>
+
+                            <td>{{ bin.location }}</td>
+
+                            <td>
+
+    {% if bin.fill_level >= 95 %}
+
+        <span class="badge bg-danger">
+            {{ bin.fill_level }}%
+        </span>
+
+    {% elif bin.fill_level >= 80 %}
+
+        <span class="badge bg-warning text-dark">
+            {{ bin.fill_level }}%
+        </span>
+
+    {% else %}
+
+        <span class="badge bg-success">
+            {{ bin.fill_level }}%
+        </span>
+
+    {% endif %}
+
+</td>
+
+                            <td>
+
+                                {% if bin.battery < 20 %}
+
+                                    <span class="badge bg-danger">
+                                        {{ bin.battery }}%
+                                    </span>
+
+                                {% elif bin.battery < 50 %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        {{ bin.battery }}%
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-success">
+                                        {{ bin.battery }}%
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if bin.fill_level >= 95 %}
+
+                                    <span class="badge bg-danger">
+                                        OVERFLOW
+                                    </span>
+
+                                {% elif bin.fill_level >= 80 %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        FULL
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-success">
+                                        NORMAL
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Route Map -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+            <h4 class="mb-0">Collection Route Map</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div id="map" style="height:500px;"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Auto Refresh -->
+
+<script>
+
+setInterval(function(){
+
+    location.reload();
+
+}, 30000);
+
+</script>
+
+<!-- Chart.js -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(
+    document.getElementById("wasteChart"),
+    {
+        type: "line",
+
+        data: {
+
+            labels: [
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun"
+            ],
+
+            datasets: [
+                {
+                    label: "Waste Collected",
+
+                    data: [
+                        120,
+                        200,
+                        180,
+                        250,
+                        300,
+                        450,
+                        380
+                    ]
+                }
+            ]
+        }
+    }
+);
+
+</script>
+
+<!-- Leaflet -->
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+var map = L.map('map').setView([18.5204, 73.8567], 12);
+
+L.tileLayer(
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+).addTo(map);
+
+L.marker([18.5204, 73.8567])
+.addTo(map)
+.bindPopup("Bin 1");
+
+L.marker([18.5600, 73.9000])
+.addTo(map)
+.bindPopup("Bin 2");
+
+L.polyline([
+    [18.5204, 73.8567],
+    [18.5600, 73.9000]
+]).addTo(map);
+
+</script>
+
+{% endblock %}

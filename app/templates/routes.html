@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        AI Powered Smart Collection Route
+    </h2>
+
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow">
+
+                <div class="card-body">
+
+                    <h5>Total Route Distance</h5>
+
+                    <h3>
+                        {{ total_distance }} km
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- AI Route Table -->
+
+    <h4 class="mb-3">
+        AI Optimized Collection Priority
+    </h4>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-striped">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Rank</th>
+                    <th>Bin</th>
+                    <th>Fill %</th>
+                    <th>Hours Left</th>
+                    <th>Risk %</th>
+                    <th>Priority</th>
+                    <th>Route Score</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for item in route_bins %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ item.bin.bin_code }}
+                    </td>
+
+                    <td>
+                        {{ item.fill_level }}%
+                    </td>
+
+                    <td>
+                        {{ item.predicted_hours }}
+                    </td>
+
+                    <td>
+                        {{ item.overflow_risk }}%
+                    </td>
+
+                    <td>
+                        {{ item.priority_score }}
+                    </td>
+
+                    <td>
+                        {{ item.route_score }}
+                    </td>
+
+                    <td>
+
+                        {% if item.route_score > 90 %}
+
+                        <span class="badge bg-danger">
+                            Immediate
+                        </span>
+
+                        {% elif item.route_score > 70 %}
+
+                        <span class="badge bg-warning text-dark">
+                            High
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-success">
+                            Normal
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <hr>
+
+    <!-- Map -->
+
+    <h4 class="mb-3">
+        Route Map
+    </h4>
+
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+    />
+
+    <div
+    id="map"
+    style="height:600px;"
+    ></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+
+    var coordinates =
+    {{ coordinates | tojson }};
+
+    var map = L.map('map')
+    .setView([18.5204, 73.8567], 12);
+
+    L.tileLayer(
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            maxZoom: 19
+        }
+    ).addTo(map);
+
+    var routePoints = [];
+
+    coordinates.forEach(function(bin){
+
+        L.marker([
+            bin.lat,
+            bin.lng
+        ])
+        .addTo(map)
+        .bindPopup(
+            "<b>" + bin.bin_code + "</b>" +
+            "<br>Fill Level: " +
+            bin.fill_level + "%"
+        );
+
+        routePoints.push([
+            bin.lat,
+            bin.lng
+        ]);
+
+    });
+
+    if(routePoints.length > 1){
+
+        L.polyline(
+            routePoints,
+            {
+                weight: 5
+            }
+        ).addTo(map);
+
+        map.fitBounds(routePoints);
+
+    }
+
+    </script>
+
+    <hr>
+
+    <!-- Final Collection Sequence -->
+
+    <h4 class="mt-4">
+        Final Collection Sequence
+    </h4>
+
+    <table class="table table-bordered">
+
+        <thead class="table-light">
+
+            <tr>
+
+                <th>Order</th>
+                <th>Bin</th>
+                <th>Fill Level</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for item in route_bins %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ item.bin.bin_code }}
+                </td>
+
+                <td>
+                    {{ item.fill_level }}%
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

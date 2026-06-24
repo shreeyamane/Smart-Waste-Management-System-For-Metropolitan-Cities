@@ -1,0 +1,20 @@
+body{
+    background:#f5f6fa;
+}
+
+.dashboard-card{
+    border:none;
+    border-radius:15px;
+}
+
+.card{
+    box-shadow:0px 3px 10px rgba(0,0,0,0.1);
+}
+
+table{
+    background:white;
+}
+
+#map{
+    border-radius:15px;
+}

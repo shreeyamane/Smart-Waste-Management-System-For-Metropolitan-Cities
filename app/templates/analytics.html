@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Advanced Analytics Dashboard
+    </h2>
+
+    <!-- KPI CARDS -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-2">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h6>Avg Fill Level</h6>
+                    <h3>{{ kpis["avg_fill"] }}%</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h6>Avg Battery</h6>
+                    <h3>{{ kpis["avg_battery"] }}%</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h6>Overflow Bins</h6>
+                    <h3>{{ kpis["overflow_bins"] }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h6>Total Alerts</h6>
+                    <h3>{{ kpis["total_alerts"] }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h6>Waste Generated Today</h6>
+                    <h3>{{ kpis["waste_today"] }} KG</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- INSIGHTS -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    Trend Detection
+                </div>
+                <div class="card-body">
+                    <h4>{{ trend }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    Anomaly Detection
+                </div>
+                <div class="card-body">
+                    <h4>{{ anomaly }}</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- DAILY + WEEKLY -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    Daily Waste Trend
+                </div>
+                <div class="card-body">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    Weekly Waste Trend
+                </div>
+                <div class="card-body">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MONTHLY + AREA -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    Monthly Waste Trend
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    Area Wise Waste
+                </div>
+                <div class="card-body">
+                    <canvas id="areaChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- DISTRIBUTIONS -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    Fill Distribution
+                </div>
+                <div class="card-body">
+                    <canvas id="fillChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    Battery Distribution
+                </div>
+                <div class="card-body">
+                    <canvas id="batteryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    Alert Distribution
+                </div>
+                <div class="card-body">
+                    <canvas id="alertChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TOP BINS -->
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+                    Top 10 Full Bins
+                </div>
+
+                <div class="card-body">
+                    <canvas id="topBinsChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const dailyLabels = {{ daily["labels"] | tojson }};
+const dailyValues = {{ daily["values"] | tojson }};
+
+const weeklyLabels = {{ weekly["labels"] | tojson }};
+const weeklyValues = {{ weekly["values"] | tojson }};
+
+const monthlyLabels = {{ monthly["labels"] | tojson }};
+const monthlyValues = {{ monthly["values"] | tojson }};
+
+const areaLabels = {{ area["labels"] | tojson }};
+const areaValues = {{ area["values"] | tojson }};
+
+const fillLabels = {{ fill_distribution["labels"] | tojson }};
+const fillValues = {{ fill_distribution["values"] | tojson }};
+
+const batteryLabels = {{ battery_distribution["labels"] | tojson }};
+const batteryValues = {{ battery_distribution["values"] | tojson }};
+
+const alertLabels = {{ alerts["labels"] | tojson }};
+const alertValues = {{ alerts["values"] | tojson }};
+
+const topLabels = {{ top_bins["labels"] | tojson }};
+const topValues = {{ top_bins["values"] | tojson }};
+
+</script>
+
+<script src="/static/js/analytics.js"></script>
+
+{% endblock %}
